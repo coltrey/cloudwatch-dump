@@ -161,11 +161,10 @@ def main():
     # get metrics list
     metrics = get_metrics(options.region)
     if options.metric_filename:
-        metricFile = open(options.metric_filename).read()
-        options.metrics = options.metrics + [metric.strip() for metric in metricFile.readlines()]
-        metricFile.close()
+        metricFile = open(options.metric_filename).readlines()
+        options.metrics = options.metrics + [metric.strip() for metric in metricFile]
     if options.metrics:
-        metrics = [metric for metric in metrics if metric in options.metrics]
+        metrics = [metric for metric in metrics if unicode(metric) in options.metrics]
     query_params = ((m, s) for m in metrics for s in statistics_list)
 
     # get ec2 names resolver
