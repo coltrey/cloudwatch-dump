@@ -95,13 +95,13 @@ def get_ec2_names(region):
     return dict((x.id, x.tags.get('Name')) for x in instances if x.tags.get('Name'))
 
 
-def print_data(data, ec2_names):
+def print_data(data, ec2_names, separator=" "):
     """
     Output value of one datapoint.
     Timestamp is converted to localtime.
     """
     m, s, v, t = data
-    print('%s %.10f %d' % (metric_to_tag(m, s, ec2_names), v, t.to_local().epoch()))
+    print('%s%s%.10f%s%d' % (metric_to_tag(m, s, ec2_names), separator, v, separator, t.to_local().epoch()))
 
 
 def parse_args():
@@ -143,6 +143,10 @@ def parse_args():
         '--metric-filename', dest='metric_filename', default=None,
         help='Specify a file to read metric names from (default: None)'
     )
+    parser.add_option(
+        '--separator', dest='separator', default=" ",
+        help='Specify a separator to use on the output (default: " ")'
+    )
     return parser.parse_args()
 
 
@@ -181,7 +185,7 @@ def main():
     else:
         # fetch and print metrics statistics
         for data in get_data(metrics, statistics_list, start, end, options.period):
-            print_data(data, ec2_names)
+            print_data(data, ec2_names, separator=options.separator)
     return 0
 
 
