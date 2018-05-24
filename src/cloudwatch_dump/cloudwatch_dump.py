@@ -135,6 +135,14 @@ def parse_args():
         '--check', action='store_true', dest='check', default=False,
         help='prints only the metrics and its statistics methods (default: False)'
     )
+    parser.add_option(
+        '--metric', action='append', dest='metrics', default=[],
+        help='Specify which metrics to retreive (default: All)'
+    )
+    parser.add_option(
+        '--metric-filename', dest='metric_filename', default=None,
+        help='Specify a file to read metric names from (default: None)'
+    )
     return parser.parse_args()
 
 
@@ -152,6 +160,12 @@ def main():
 
     # get metrics list
     metrics = get_metrics(options.region)
+    if options.metric_filename:
+        metricFile = open(options.metric_filename).read()
+        options.metrics = options.metrics + [metric.strip() for metric in metricFile.readlines()]
+        metricFile.close()
+    if options.metrics:
+        metrics = [metric for metric in metrics if metric in options.metrics]
     query_params = ((m, s) for m in metrics for s in statistics_list)
 
     # get ec2 names resolver
